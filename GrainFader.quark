@@ -1,0 +1,11 @@
+(
+  name: "GrainFader",
+  summary: "A pair of buffer granulators that can be crossfaded and independently monitored",
+  version: "1.0",
+  schelp: "GrainFader.schelp",
+  dependencies: ['TouchOSC', 'Ctk'],
+  license: "GNU GPL v3.0",
+  copyright: "mtmccrea",
+  ext_dependency: "",
+  url: "https://github.com/mtmccrea/grainfader.quark"
+)
