@@ -48,7 +48,7 @@ GrainFader {
 			synthlib ?? {this.class.loadSynthDefs};
 			server.sync;
 
-			buffers = bufPaths.collect{ |path| CtkBuffer.playbuf(path).load };
+			(bufPaths.size > 0).if({buffers = bufPaths.collect{ |path| CtkBuffer.playbuf(path).load }});
 			server.sync;
 
 			group = CtkGroup.play(server: server);
@@ -70,8 +70,8 @@ GrainFader {
 			};
 
 			synth1 = GrainFader.synthlib[\grainJ].note(addAction: \head, target: group)
-			.buffer_(buffers[0])			// default to first buffer
-			.bufnum_(buffers[0].bufnum)
+			.buffer_(if(buffers.notNil, {buffers[0]}))			// default to first buffer
+			.bufnum_(if(buffers.notNil, {buffers[0].bufnum}))
 			.out_bus_( outbus.isKindOf(Array).if({outbus[0]}, {outbus}) )
 			.out_bus_aux_( 					// outbus to aux
 				case
@@ -85,8 +85,8 @@ GrainFader {
 			.play;
 
 			synth2 = GrainFader.synthlib[\grainJ].note(addAction: \head, target: group)
-			.buffer_(buffers[0])
-			.bufnum_(buffers[0].bufnum)
+			.buffer_(if(buffers.notNil, {buffers[0]}))
+			.bufnum_(if(buffers.notNil, {buffers[0].bufnum}))
 			.out_bus_(( outbus.isKindOf(Array).if({outbus[1] ?? outbus}, {outbus}) ))
 			.out_bus_aux_( 					// outbus to aux
 				case
