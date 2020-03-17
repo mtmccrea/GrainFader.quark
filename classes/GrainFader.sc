@@ -11,7 +11,7 @@ GrainFader {
 	var <monBus; // assigned for user if not provided on instantiation
 	var <internalAuxBus, <group, <sfNames, <bufPaths, <buffers;
 	var <lastRecalledSynthDex = 1, <lastUpdated;
-	var <myTouchOsc, presetWin;
+	var <myTouchOsc, <presetWin, <presetWinCategory;
 
 	var <>pitchSnapVal = 1.0, <>pitchSnapThresh = 0.1;
 	var <>rateSnapVal = 1.0, <>rateSnapThresh = 0.1;
@@ -164,6 +164,8 @@ GrainFader {
 		group.freeAll;
 		internalMonBus.free;
 		monBus !? {monBus.free};
+		presetWin !? {{presetWin.close}.defer};
+		presetWinCategory !? {{presetWinCategory.close}.defer};
 	}
 
 
@@ -367,7 +369,7 @@ GrainFader {
 	// find preset name matches, display them in columns by "categories"
 	// e.g. "trumpet" would match 'trumpet01', 'trumpet02', 'trumpet_noisy', etc...
 	// and create a "trumpet" column in the preset window
-	presetGUIbyCategory { |nameArray|
+	presetGUIbyCategory { |nameArray, parent|
 		var ftBox, varBox, msg_Txt, presetLayouts, categoryNames, groupedPresets, maxGroupSize;
 
 		categoryNames = [];
@@ -441,14 +443,22 @@ GrainFader {
 			// returns column layout to be collected
 		});
 
-		presetWin = Window("Grain Presets", Rect(0,0,100,100)).view.layout_(
+		if(parent.isNil, {
+			presetWinCategory = Window("Grain Presets", Rect(0,0,100,100)).front;
+		}, {
+			presetWinCategory = View(parent);
+		});
+		presetWinCategory.asView.layout_(
 			VLayout(
-				[Button().states_([["Mute", Color.black, Color.grey],["Muted", Color.white, Color.red]]).action_({ |but|
-					switch( but.value,
-						0, {this.unmute},
-						1, {this.mute}
-					)
-				}).maxWidth_(70).fixedHeight_(35), a: \right],
+				HLayout(
+					parent !? {StaticText().string_("Grain Presets")},
+					[Button().states_([["Mute", Color.black, Color.grey],["Muted", Color.white, Color.red]]).action_({ |but|
+						switch( but.value,
+							0, {this.unmute},
+							1, {this.mute}
+						)
+					}).maxWidth_(70).fixedHeight_(35), a: \right],
+				),
 				HLayout(
 					nil,
 					StaticText().string_("Variance").align_(\right).fixedHeight_(25),
@@ -456,8 +466,8 @@ GrainFader {
 					StaticText().string_("Fade Time").align_(\right).fixedHeight_(25),
 					ftBox = NumberBox().value_(1.0).maxWidth_(35).fixedHeight_(25)
 				),
-				HLayout(
-					msg_Txt = StaticText().string_("Select a synth to update.").fixedHeight_(35),
+				VLayout(
+					msg_Txt = StaticText().string_("Select a synth to update."),
 					Button().states_([["Update Preset"]]).action_({this.updatePreset}).fixedWidth_(95)
 				),
 				// column title
@@ -468,10 +478,10 @@ GrainFader {
 				),
 				HLayout( *presetLayouts )
 			)
-		).front;
+		);
 	}
 
-	presetGUI { |numCol=1|
+	presetGUI { |numCol=1, parent|
 		var presetsClumped, ftBox, varBox, msg_Txt, presetLayouts, maxRows;
 		maxRows = (this.presets.size / numCol).ceil.asInteger;
 
@@ -518,14 +528,23 @@ GrainFader {
 			)
 		});
 
-		presetWin = Window("Grain Presets", Rect(0,0,100, 100)).view.layout_(
+		if(parent.isNil, {
+			presetWin = Window("Grain Presets", Rect(0,0,100,100)).front;
+		}, {
+			presetWin = View(parent);
+
+		});
+		presetWin.asView.layout_(
 			VLayout(
-				[ Button().states_([["Mute", Color.black, Color.grey],["Muted", Color.white, Color.red]]).action_({ |but|
-					switch( but.value,
-						0, {this.unmute},
-						1, {this.mute}
-					)
-				}).maxWidth_(70).fixedHeight_(35), a: \right],
+				HLayout(
+					parent !? {StaticText().string_("Grain Presets")},
+					[ Button().states_([["Mute", Color.black, Color.grey],["Muted", Color.white, Color.red]]).action_({ |but|
+						switch( but.value,
+							0, {this.unmute},
+							1, {this.mute}
+						)
+					}).maxWidth_(70).fixedHeight_(35), a: \right],
+				),
 				HLayout(
 					nil,
 					StaticText().string_("Variance").align_(\right).fixedHeight_(25),
@@ -533,13 +552,13 @@ GrainFader {
 					StaticText().string_("Fade Time").align_(\right).fixedHeight_(25),
 					ftBox = NumberBox().value_(1.0).maxWidth_(35).fixedHeight_(25)
 				),
-				HLayout(
-					msg_Txt = StaticText().string_("Select a synth to update.").fixedHeight_(35),
+				VLayout(
+					msg_Txt = StaticText().string_("Select a synth to update."),
 					Button().states_([["Update Preset"]]).action_({this.updatePreset}).fixedWidth_(95)
 				),
 				HLayout( *presetLayouts )
 			)
-		).front;
+		);
 	}
 
 
