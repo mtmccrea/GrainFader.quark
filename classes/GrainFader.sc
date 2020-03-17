@@ -65,13 +65,13 @@ GrainFader {
 			internalAuxBus = auxBus ?? CtkAudio.play(outbus.asArray.size);
 
 			monSynths = monitorBus.asArray.collect{ |busnum, i|
-				GrainFader.synthlib[\grn_monitor].note(addAction: \tail, target: group)
+				GrainFader.synthlib[\grn_monitor].note(nil, addAction: \tail, target: group)
 				.inbus_(internalMonBus.bus + i)
 				.outbus_(busnum)
 				.play;
 			};
 
-			synth1 = GrainFader.synthlib[\grainJ].note(addAction: \head, target: group)
+			synth1 = GrainFader.synthlib[\grainJ].note(nil, addAction: \head, target: group)
 			.buffer_(if(buffers.notNil, {buffers[0]}))			// default to first buffer
 			.bufnum_(if(buffers.notNil, {buffers[0].bufnum}))
 			.out_bus_( outbus.isKindOf(Array).if({outbus[0]}, {outbus}) )
@@ -86,7 +86,7 @@ GrainFader {
 			.gate_(0)						// start synth but close gate
 			.play;
 
-			synth2 = GrainFader.synthlib[\grainJ].note(addAction: \head, target: group)
+			synth2 = GrainFader.synthlib[\grainJ].note(nil, addAction: \head, target: group)
 			.buffer_(if(buffers.notNil, {buffers[0]}))
 			.bufnum_(if(buffers.notNil, {buffers[0].bufnum}))
 			.out_bus_(( outbus.isKindOf(Array).if({outbus[1] ?? outbus}, {outbus}) ))
@@ -103,7 +103,7 @@ GrainFader {
 
 
 			verbSynth = outbus.asArray.collect({ |mainOutBus, i|
-				GrainFader.synthlib[\verb_localin].note(addAction: \tail, target: group)
+				GrainFader.synthlib[\verb_localin].note(nil, addAction: \tail, target: group)
 				.amp_(1)
 				.outbus_(mainOutBus)
 				.inbus_(
