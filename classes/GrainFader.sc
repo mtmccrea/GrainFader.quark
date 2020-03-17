@@ -21,6 +21,7 @@ GrainFader {
 	}
 
 	init {
+		var initFunc;
 		sfNames = [];
 		bufPaths = [];
 		// check if buf folder exists and has files
@@ -44,14 +45,15 @@ GrainFader {
 
 		server ?? { server = Server.default };
 
-		server.waitForBoot({
+		initFunc = {
 			synthlib ?? {this.class.loadSynthDefs};
 			server.sync;
 
 			(bufPaths.size > 0).if({buffers = bufPaths.collect{ |path| CtkBuffer.playbuf(path).load }});
-			server.sync;
 
-			group = CtkGroup.play(server: server);
+			group = CtkGroup.play(nil, server: server);
+
+			server.sync;
 
 			// allow user to not assign a monitor bus directly
 			monitorBus ?? {
@@ -116,6 +118,12 @@ GrainFader {
 				.play;
 			});
 
+		};
+
+		if(server.serverRunning.not, {
+			server.waitForBoot(initFunc);
+		}, {
+			initFunc.forkIfNeeded;
 		});
 	}
 
