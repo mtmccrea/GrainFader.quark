@@ -144,7 +144,7 @@ GrainFader {
 	monitor_ { |which, bool|
 		switch( which,
 			0, { synth1 }, 1, {synth2}
-		).monAmp_(bool.asInt)
+		).monAmp_(bool.asInteger)
 	}
 
 	mute { [synth1, synth2].do(_.pause) }
@@ -250,7 +250,7 @@ GrainFader {
 			},{
 				var receiveStates, numReceivers;
 
-				receiveStates = [synth1, synth2].collect(_.recvUpdate).asInt;
+				receiveStates = [synth1, synth2].collect(_.recvUpdate).asInteger;
 				numReceivers = receiveStates.occurrencesOf(1);
 
 				case
@@ -399,7 +399,7 @@ GrainFader {
 										// make sure a synth is set to receive updates
 										[synth1, synth2].do({
 											|synth, i|
-											synth.recvUpdate.asInt.asBoolean.if({
+											synth.recvUpdate.asInteger.asBoolean.if({
 												whichSynth.isNil.if(
 													{	whichSynth = i },
 													{
@@ -465,7 +465,7 @@ GrainFader {
 
 	presetGUI { |numCol=1|
 		var presetsClumped, ftBox, varBox, msg_Txt, presetLayouts, maxRows;
-		maxRows = (this.presets.size / numCol).ceil.asInt;
+		maxRows = (this.presets.size / numCol).ceil.asInteger;
 
 		presetsClumped = this.presets.keys.asArray.sort.clump(maxRows);
 
@@ -482,7 +482,7 @@ GrainFader {
 									// make sure a synth is set to receive updates
 									[synth1, synth2].do({
 										|synth, i|
-										synth.recvUpdate.asInt.asBoolean.if({
+										synth.recvUpdate.asInteger.asBoolean.if({
 											whichSynth.isNil.if(
 												{	whichSynth = i },
 												{
@@ -678,7 +678,7 @@ GrainFader {
 		// sfNames.do{ |name, i|
 		// 	aTouchOsc.connect( this,
 		// 		\sf++i,	{|obj, val|
-		// 			(val.asInt == 1).if{ obj.swapBuf_( i ) }
+		// 			(val.asInteger == 1).if{ obj.swapBuf_( i ) }
 		// 		}
 		// 	)
 		// };
@@ -687,7 +687,7 @@ GrainFader {
 		(numSfRows * numSfColumns).do{ |i|
 			aTouchOsc.connect( this,
 				\sf++i,	{|obj, val|
-					(val.asInt == 1).if{
+					(val.asInteger == 1).if{
 						obj.swapBuf_(
 							// todo: check if this is a valid buffer num
 							((numSfRows * numSfColumns) * sfPage) + i
@@ -701,7 +701,7 @@ GrainFader {
 		2.do{ |i|
 			aTouchOsc.connect( this,
 				\sfPageTurn++i,	{ |obj, val|
-					(val.asInt == 1).if{
+					(val.asInteger == 1).if{
 						sfPage = switch( i,
 							// prev
 							0, { (sfPage -1) % numSfPages; },
